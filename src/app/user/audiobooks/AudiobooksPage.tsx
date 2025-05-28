@@ -6,7 +6,7 @@ import { SearchFilters } from '@/components/user/audiobooks/SearchFilters'
 import { AudiobookGrid } from '@/components/user/audiobooks/AudiobookGrid'
 import { Pagination } from '@/components/user/audiobooks/Pagination'
 import { EmptyState } from '@/components/user/audiobooks/EmptyState'
-import { Loader2, BookOpen, Filter, X } from 'lucide-react'
+import { Loader2, Filter, X } from 'lucide-react'
 
 interface Author {
   id: string
@@ -58,7 +58,7 @@ interface AudiobooksPageProps {
   }
 }
 
-// Client-side fetch function
+
 const fetchAudiobooks = async (
   page = 1,
   search = '',
@@ -79,7 +79,7 @@ const fetchAudiobooks = async (
   return res.json()
 }
 
-// Loading skeleton component
+
 const AudiobookGridSkeleton = () => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
     {Array.from({ length: 8 }).map((_, i) => (
@@ -94,7 +94,7 @@ const AudiobookGridSkeleton = () => (
   </div>
 )
 
-// Active filters display component
+
 const ActiveFilters = ({ 
   searchQuery, 
   selectedAuthor, 

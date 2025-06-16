@@ -49,13 +49,38 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  // Subscription
+  subscriptionType SubscriptionType @default(FREE) @map("subscription_type")
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+
   // Relations
-  accounts          Account[]
-  sessions          Session[]
-  listeningProgress ListeningProgress[]
-  bookmarks         Bookmark[]
+  accounts  Account[]
+  sessions  Session[]
+  profile   UserProfile?
+  favorites Favorite[]
 
   @@map("users")
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique @map("user_id")
+  bio         String?  @db.Text
+  avatar      String?  // Avatar URL
+  dateOfBirth DateTime? @map("date_of_birth")
+  country     String?
+  language    String?  @default("en")
+  
+  // Preferences
+  preferredGenres String[] // Array of preferred category IDs or names
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
 }
 
 model VerificationToken {
@@ -120,55 +145,47 @@ model Audiobook {
   // Direct foreign key to author
   authorId    String   @map("author_id")
   
+  // Trending/Analytics fields
+  viewCount     Int      @default(0) @map("view_count") // Number of times audiobook was opened
+  playCount     Int      @default(0) @map("play_count") // Number of times playback started
+
+  // Premium content
+  isPremium     Boolean  @default(false) @map("is_premium") // Requires premium subscription
+  
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  author            Author              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  listeningProgress ListeningProgress[]
-  categories        AudiobookCategory[]
-  bookmarks         Bookmark[]
+  author     Author              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories AudiobookCategory[]
+  favorites  Favorite[]
 
   @@map("audiobooks")
 }
 
-model ListeningProgress {
+// Favorites model
+model Favorite {
   id          String   @id @default(cuid())
   userId      String   @map("user_id")
   audiobookId String   @map("audiobook_id")
-  position    Int      // Current position in seconds
-  completed   Boolean  @default(false)
-  lastPlayed  DateTime @default(now()) @map("last_played")
   createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   audiobook Audiobook @relation(fields: [audiobookId], references: [id], onDelete: Cascade)
 
   @@unique([userId, audiobookId])
-  @@map("listening_progress")
-}
-
-model Bookmark {
-  id          String   @id @default(cuid())
-  userId      String   @map("user_id")
-  audiobookId String   @map("audiobook_id")
-  position    Int      // Position in seconds
-  title       String   // User-defined bookmark title
-  note        String?  @db.Text // Optional note
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  audiobook Audiobook @relation(fields: [audiobookId], references: [id], onDelete: Cascade)
-
-  @@map("bookmarks")
+  @@map("favorites")
 }
 
 // Enums
 enum Role {
   USER
   ADMIN
+}
+
+enum SubscriptionType {
+  FREE
+  PREMIUM
+  PREMIUM_PLUS
 }

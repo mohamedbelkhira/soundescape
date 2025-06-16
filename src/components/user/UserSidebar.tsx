@@ -25,8 +25,7 @@ import {
   User,
   Settings,
   Headphones,
-  Search,
-  Download
+  Search
 } from "lucide-react"
 
 const navigationItems = [
@@ -44,9 +43,7 @@ const navigationItems = [
     items: [
       { title: "audiobooks", url: "/user/audiobooks", icon: Library },
       { title: "Favorites", url: "/user/favorites", icon: Heart },
-      { title: "Continue Reading", url: "/user/continue", icon: Clock },
       { title: "Bookmarks", url: "/user/bookmarks", icon: Bookmark },
-      { title: "Downloads", url: "/user/downloads", icon: Download },
     ]
   },
   {

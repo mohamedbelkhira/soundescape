@@ -53,12 +53,12 @@ export async function POST(request: Request) {
         }
       })
 
-      // Create the user profile
+      
       const profile = await tx.userProfile.create({
         data: {
           userId: user.id,
-          language: "en", // Default language
-          preferredGenres: [], // Empty array initially
+          language: "en", 
+          preferredGenres: [],
         },
         select: {
           id: true,
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "User created successfully",
+        message: "User with profilecreated successfully",
         user: result.user,
         profile: result.profile
       },

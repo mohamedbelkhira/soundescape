@@ -4,6 +4,7 @@ import { Audiobook, Prisma } from '@prisma/client';
 import { deleteFile } from '@/lib/file-upload';
 import path from 'path';
 
+
 export interface AudiobookInput {
   title: string;
   description?: string;
@@ -36,8 +37,7 @@ export interface AudiobookWithDetails extends Audiobook {
     };
   }>;
   _count: {
-    listeningProgress: number;
-    bookmarks: number;
+    favorites: number;
   };
 }
 
@@ -47,11 +47,81 @@ export interface AudiobookSummary extends Pick<Audiobook, 'id' | 'title' | 'cove
     name: string;
   };
 }
+const defaultAudiobookSelect = {
+  author:  { select: { id: true, name: true } },
+  categories: {
+    include: { category: { select: { id: true, title: true } } },
+  },
+  _count:  { select: { favorites: true } },
+} as const;
 
 export class AudiobookService {
   /**
    * Create a new audiobook
    */
+  static async getLatest(
+    limit = 10,
+    offset = 0,
+    /** pass false to also return drafts */
+    onlyPublished = true,
+  ): Promise<{ audiobooks: AudiobookWithDetails[]; total: number }> {
+
+    const where: Prisma.AudiobookWhereInput = onlyPublished
+      ? { isPublished: true }
+      : {};
+
+    const [audiobooks, total] = await Promise.all([
+      prisma.audiobook.findMany({
+        where,
+        include: defaultAudiobookSelect,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.audiobook.count({ where }),
+    ]);
+
+    return { audiobooks, total };
+  }
+    static async getTrending(
+    limit = 10,
+    offset = 0,
+  
+    windowInDays = 0,
+  ): Promise<{ audiobooks: AudiobookWithDetails[]; total: number }> {
+
+    const windowFilter =
+      windowInDays > 0
+        ? {
+            updatedAt: {
+              gte: new Date(Date.now() - windowInDays * 86_400_000),
+            },
+          }
+        : {};
+
+    const where: Prisma.AudiobookWhereInput = {
+      ...windowFilter,
+      isPublished: true,
+    };
+
+    const [audiobooks, total] = await Promise.all([
+      prisma.audiobook.findMany({
+        where,
+        include: defaultAudiobookSelect,
+        orderBy: [
+          { playCount: 'desc' },                 
+          { viewCount: 'desc' },                 
+          { favorites: { _count: 'desc' } },   
+        ],
+        take: limit,
+        skip: offset,
+      }),
+      prisma.audiobook.count({ where }),
+    ]);
+
+    return { audiobooks, total };
+  }
+
   static async create(data: AudiobookInput): Promise<AudiobookWithDetails> {
     try {
       const audiobook = await prisma.audiobook.create({
@@ -82,8 +152,7 @@ export class AudiobookService {
           },
           _count: {
             select: {
-              listeningProgress: true,
-              bookmarks: true,
+              favorites: true,
             },
           },
         },
@@ -145,8 +214,7 @@ export class AudiobookService {
           },
           _count: {
             select: {
-              listeningProgress: true,
-              bookmarks: true,
+              favorites: true,
             },
           },
         },
@@ -179,8 +247,7 @@ export class AudiobookService {
         },
         _count: {
           select: {
-            listeningProgress: true,
-            bookmarks: true,
+            favorites: true,
           },
         },
       },
@@ -239,8 +306,7 @@ export class AudiobookService {
           },
           _count: {
             select: {
-              listeningProgress: true,
-              bookmarks: true,
+              favorites: true,
             },
           },
         },

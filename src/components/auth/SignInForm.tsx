@@ -51,7 +51,7 @@ export function SignInForm() {
           } else if (session.user.role === "ADMIN") {
             router.push("/admin")
           } else {
-            router.push("/user")
+            router.push("/user/audiobooks")
           }
           router.refresh()
         }

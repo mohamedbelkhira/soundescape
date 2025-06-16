@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
+import Link from 'next/link';
 // ==================== BACKGROUND COMPONENTS ====================
 
 const AnimatedBackground = ({ scrollY }) => (
@@ -109,10 +109,10 @@ const AuthButtons = () => (
       variant="ghost" 
       className="text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300"
     >
-      Sign In
+     <Link href="/auth/signin">Sign&nbsp;in</Link>
     </Button>
     <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105">
-      Get Started
+    <Link href="/auth/signup">Sign&nbsp;up</Link>
     </Button>
   </div>
 );

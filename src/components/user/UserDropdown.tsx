@@ -15,9 +15,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
   User,
-  Settings,
-  CreditCard,
-  HelpCircle,
   LogOut,
   Crown,
   Activity
@@ -108,7 +105,7 @@ export function UserDropdown() {
             </Link>
           </DropdownMenuItem>
           
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link 
               href="/user/settings" 
               className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
@@ -116,9 +113,9 @@ export function UserDropdown() {
               <Settings className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               <span>Settings</span>
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link 
               href="/user/subscription" 
               className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
@@ -126,9 +123,9 @@ export function UserDropdown() {
               <CreditCard className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               <span>Subscription</span>
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link 
               href="/help" 
               className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
@@ -136,7 +133,7 @@ export function UserDropdown() {
               <HelpCircle className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               <span>Help & Support</span>
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </div>
         
         <DropdownMenuSeparator className="mx-2 bg-slate-200 dark:bg-slate-700" />

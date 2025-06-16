@@ -15,15 +15,10 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 import {
-  Home,
-  Library,
   Heart,
-  Clock,
-  Bookmark,
   TrendingUp,
   Star,
   User,
-  Settings,
   Headphones,
   Search
 } from "lucide-react"
@@ -32,25 +27,21 @@ const navigationItems = [
   {
     title: "Discover",
     items: [
-      { title: "Home", url: "/user", icon: Home },
-      { title: "Browse", url: "/user/browse", icon: Search },
+      { title: "Browse", url: "/user/audiobooks", icon: Search },
       { title: "Trending", url: "/user/trending", icon: TrendingUp },
-      { title: "New Releases", url: "/user/new", icon: Star },
+      { title: "New Releases", url: "/user/new-releases ", icon: Star },
     ]
   },
   {
     title: "My Library",
     items: [
-      { title: "audiobooks", url: "/user/audiobooks", icon: Library },
       { title: "Favorites", url: "/user/favorites", icon: Heart },
-      { title: "Bookmarks", url: "/user/bookmarks", icon: Bookmark },
     ]
   },
   {
     title: "Account",
     items: [
       { title: "Profile", url: "/user/profile", icon: User },
-      { title: "Settings", url: "/user/settings", icon: Settings },
     ]
   }
 ]
@@ -67,9 +58,9 @@ export function UserSidebar() {
           </div>
           <div>
             <h2 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              AudioLib
+              SoundScape
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Your Audio Library</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Your Sound Library</p>
           </div>
         </div>
       </SidebarHeader>

@@ -2,44 +2,79 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AudiobookService } from "@/services/audiobook.service";
 
+const safePositiveInt = (value: string | null, fallback: number) => {
+  const n = Number.parseInt(value ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+};
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get("search") || undefined;
-    const authorId = searchParams.get("authorId") || undefined;
-    const categoryId = searchParams.get("categoryId") || undefined;
-    const isPublished = searchParams.get("isPublished");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
+
+    /* ---------------- Pagination ---------------------------------------- */
+    const page  = safePositiveInt(searchParams.get("page"), 1);
+    const limit = safePositiveInt(searchParams.get("limit"), 10);
     const offset = (page - 1) * limit;
 
+    /* ---------------- Decide which list to return ----------------------- */
+    const rawView = (searchParams.get("view") ?? "all").toLowerCase();
+    const view = rawView === "latest" || rawView === "trending" ? rawView : "all";
+
+    /* ---------------- 1. LATEST ---------------------------------------- */
+    if (view === "latest") {
+      const includeDrafts = searchParams.get("includeDrafts") === "true";
+      const { audiobooks, total } = await AudiobookService.getLatest(
+        limit,
+        offset,
+        !includeDrafts,
+      );
+
+      return NextResponse.json({
+        audiobooks,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      });
+    }
+
+    /* ---------------- 2. TRENDING -------------------------------------- */
+    if (view === "trending") {
+      const windowInDays = safePositiveInt(searchParams.get("windowInDays"), 0);
+
+      const { audiobooks, total } = await AudiobookService.getTrending(
+        limit,
+        offset,
+        windowInDays,
+      );
+
+      return NextResponse.json({
+        audiobooks,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      });
+    }
+
+    /* ---------------- 3. ALL (default) --------------------------------- */
     const filters = {
-      search,
-      authorId,
-      categoryId,
-      ...(isPublished !== null && { isPublished: isPublished === "true" }),
+      search:      searchParams.get("search")     || undefined,
+      authorId:    searchParams.get("authorId")   || undefined,
+      categoryId:  searchParams.get("categoryId") || undefined,
       limit,
       offset,
     };
+    const isPublished = searchParams.get("isPublished");
+    if (isPublished !== null) filters.isPublished = isPublished === "true";
 
-    const result = await AudiobookService.getAll(filters);
+    const { audiobooks, total } = await AudiobookService.getAll(filters);
 
     return NextResponse.json({
-      audiobooks: result.audiobooks,
-      pagination: {
-        page,
-        limit,
-        total: result.total,
-        totalPages: Math.ceil(result.total / limit),
-      },
+      audiobooks,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     });
   } catch (error) {
     return NextResponse.json(
       { message: error instanceof Error ? error.message : "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
+
 
 export async function POST(request: NextRequest) {
   try {

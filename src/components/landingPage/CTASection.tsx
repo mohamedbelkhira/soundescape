@@ -10,22 +10,16 @@ const CTAContent = () => (
       </span>
     </h2>
     <p className="text-xl text-gray-300">
-      Join millions of listeners who've already discovered the magic of Soundscape
+      Join millions of listeners who&apos;ve already discovered the magic of Soundscape
     </p>
     <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
       <Button 
         size="lg" 
         className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transition-all duration-300 hover:scale-105"
       >
-        Start Free Trial
+        Join us for Free 
       </Button>
-      <Button 
-        size="lg" 
-        variant="outline" 
-        className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105"
-      >
-        Learn More
-      </Button>
+     
     </div>
   </div>
 );

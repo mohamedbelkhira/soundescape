@@ -1,6 +1,6 @@
-// src/app/user/audiobooks/page.tsx
-import { AudiobooksPage } from "./AudiobooksPage"
-
+// src/app/user/favorites/page.tsx
+import { AudiobooksPage } from "../audiobooks/AudiobooksPage"
+import { headers } from 'next/headers'    
 interface Author {
   id: string
   name: string
@@ -62,16 +62,17 @@ const fetchAudiobooks = async (
   })
 
   // Use full URL for server-side fetching
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
   console.log("baseUrl:", baseUrl)
-  const res = await fetch(`${baseUrl}/api/audiobooks?${params}`)
+  const res = await fetch(`${baseUrl}/api/favorites?${params}`,{ headers: headers()},   )
+  console.log("res:", res)
   if (!res.ok) throw new Error('Failed to fetch audiobooks', { cause: res.statusText })
   return res.json()
 }
 
 const fetchAuthors = async (): Promise<Author[]> => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
     const res = await fetch(`${baseUrl}/api/authors`)
     if (!res.ok) return []
     const data: AuthorsResponse = await res.json()
@@ -98,10 +99,7 @@ const fetchCategories = async (): Promise<Array<{ id: string; title: string }>> 
 export default async function Page() {
   // Fetch initial data server-side
   const [initialAudiobooks, authors, categories] = await Promise.all([
-    fetchAudiobooks().catch(() => ({ 
-      audiobooks: [], 
-      pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } 
-    })),
+    fetchAudiobooks(),
     fetchAuthors(),
     fetchCategories()
   ])
@@ -111,7 +109,7 @@ export default async function Page() {
   console.log('initialAudiobooks:', initialAudiobooks)
   return (
     <AudiobooksPage
-      title="All Audiobooks"
+      title="favorites audiobooks"
       description="Browse our entire collection of audiobooks"
       initialData={{
         audiobooks: initialAudiobooks.audiobooks,

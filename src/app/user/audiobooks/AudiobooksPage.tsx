@@ -1,12 +1,12 @@
 // src/app/user/audiobooks/AudiobooksPage.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useMemo } from 'react'
 import { SearchFilters } from '@/components/user/audiobooks/SearchFilters'
 import { AudiobookGrid } from '@/components/user/audiobooks/AudiobookGrid'
 import { Pagination } from '@/components/user/audiobooks/Pagination'
 import { EmptyState } from '@/components/user/audiobooks/EmptyState'
-import { Loader2, Filter, X } from 'lucide-react'
+import { Filter, X } from 'lucide-react'
 
 /* ──────────── Types ──────────────────────────────────────────────────── */
 interface Author {
@@ -32,11 +32,6 @@ interface Audiobook {
   _count: { listeningProgress: number; bookmarks: number }
 }
 
-interface AudiobooksResponse {
-  audiobooks: Audiobook[]
-  pagination: { page: number; limit: number; total: number; totalPages: number }
-}
-
 interface AudiobooksPageProps {
   initialData: {
     audiobooks: Audiobook[]
@@ -48,43 +43,59 @@ interface AudiobooksPageProps {
   description?: string
 }
 
-/* ──────────── Helpers ────────────────────────────────────────────────── */
-const fetchAudiobooks = async (
-  page = 1,
-  search = '',
-  authorId = '',
-  categoryId = '',
-): Promise<AudiobooksResponse> => {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: '12',
-    isPublished: 'true',
-    ...(search && { search }),
-    ...(authorId && { authorId }),
-    ...(categoryId && { categoryId }),
-  })
+const ITEMS_PER_PAGE = 12
 
-  const res = await fetch(`/api/audiobooks?${params}`)
-  if (!res.ok) throw new Error('Failed to fetch audiobooks')
-  return res.json()
+/* ──────────── Helper Functions ──────────────────────────────────────── */
+const filterAudiobooks = (
+  audiobooks: Audiobook[],
+  searchQuery: string,
+  selectedAuthor: string,
+  selectedCategory: string
+): Audiobook[] => {
+  return audiobooks.filter(book => {
+    // Search filter
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase()
+      const matchesTitle = book.title.toLowerCase().includes(searchLower)
+      const matchesAuthor = book.author.name.toLowerCase().includes(searchLower)
+      const matchesDescription = book.description?.toLowerCase().includes(searchLower)
+      
+      if (!matchesTitle && !matchesAuthor && !matchesDescription) {
+        return false
+      }
+    }
+
+    // Author filter
+    if (selectedAuthor && book.author.id !== selectedAuthor) {
+      return false
+    }
+
+    // Category filter
+    if (selectedCategory) {
+      const hasCategory = book.categories.some(
+        catRef => catRef.category.id === selectedCategory
+      )
+      if (!hasCategory) {
+        return false
+      }
+    }
+
+    return true
+  })
 }
 
-const AudiobookGridSkeleton = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-    {Array.from({ length: 8 }).map((_, i) => (
-      <div
-        key={i}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 animate-pulse"
-      >
-        <div className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-        </div>
-      </div>
-    ))}
-  </div>
-)
+const paginateResults = (items: Audiobook[], page: number, limit: number) => {
+  const startIndex = (page - 1) * limit
+  const endIndex = startIndex + limit
+  const paginatedItems = items.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(items.length / limit)
+  
+  return {
+    items: paginatedItems,
+    totalPages,
+    total: items.length
+  }
+}
 
 const ActiveFilters = ({
   searchQuery,
@@ -131,7 +142,7 @@ const ActiveFilters = ({
 
       <div className="flex flex-wrap gap-2">
         {searchQuery && (
-          <Chip label={`Search: “${searchQuery}”`} onClear={clearSearch} />
+          <Chip label={`Search: "${searchQuery}"`} onClear={clearSearch} />
         )}
         {selectedAuthor && (
           <Chip label={`Author: ${authorName(selectedAuthor)}`} onClear={clearAuthor} />
@@ -167,70 +178,53 @@ export function AudiobooksPage({
   description,
 }: AudiobooksPageProps) {
   /* ----- Local state --------------------------------------------------- */
-  const [audiobooks, setAudiobooks] = useState(initialData.audiobooks)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [currentPage, setCurrentPage] = useState(initialData.pagination.page)
-  const [totalPages, setTotalPages] = useState(initialData.pagination.totalPages)
-  const [totalItems, setTotalItems] = useState(initialData.pagination.total)
+  const [currentPage, setCurrentPage] = useState(1)
   const [selectedAuthor, setSelectedAuthor] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
 
-  const isInitialMount = useRef(true)
-  const hasFetched = useRef(false)
-
-  /* ----- Fetch helper -------------------------------------------------- */
-  const handleFetch = async (
-    page = 1,
-    search = '',
-    authorId = '',
-    categoryId = '',
-  ) => {
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await fetchAudiobooks(page, search, authorId, categoryId)
-      setAudiobooks(data.audiobooks)
-      setTotalPages(data.pagination.totalPages)
-      setCurrentPage(data.pagination.page)
-      setTotalItems(data.pagination.total)
-      hasFetched.current = true
-    } catch {
-      setError('Failed to load audiobooks. Please try again.')
-      hasFetched.current = true
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ----- Debounced refetch on filter change --------------------------- */
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      return
-    }
-
-    const id = setTimeout(
-      () => handleFetch(1, searchQuery, selectedAuthor, selectedCategory),
-      300,
+  /* ----- Computed values ----------------------------------------------- */
+  const filteredAudiobooks = useMemo(() => {
+    return filterAudiobooks(
+      initialData.audiobooks,
+      searchQuery,
+      selectedAuthor,
+      selectedCategory
     )
-    return () => clearTimeout(id)
-  }, [searchQuery, selectedAuthor, selectedCategory])
+  }, [initialData.audiobooks, searchQuery, selectedAuthor, selectedCategory])
 
+  const paginatedResults = useMemo(() => {
+    return paginateResults(filteredAudiobooks, currentPage, ITEMS_PER_PAGE)
+  }, [filteredAudiobooks, currentPage])
+
+  /* ----- Event handlers ------------------------------------------------ */
   const clearFilters = () => {
     setSearchQuery('')
     setSelectedAuthor('')
     setSelectedCategory('')
+    setCurrentPage(1)
   }
 
-  /* ----- Error state --------------------------------------------------- */
-  if (error && !loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <ErrorCard message={error} retry={() => handleFetch()} />
-      </div>
-    )
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query)
+    setCurrentPage(1)
+  }
+
+  const handleAuthorChange = (authorId: string) => {
+    setSelectedAuthor(authorId)
+    setCurrentPage(1)
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+    setCurrentPage(1)
   }
 
   /* ----- Render -------------------------------------------------------- */
@@ -253,11 +247,11 @@ export function AudiobooksPage({
 
             <SearchFilters
               searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
+              setSearchQuery={handleSearchChange}
               selectedAuthor={selectedAuthor}
-              setSelectedAuthor={setSelectedAuthor}
+              setSelectedAuthor={handleAuthorChange}
               selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
+              setSelectedCategory={handleCategoryChange}
               authors={initialData.authors}
               categories={initialData.categories}
               hasFilters={!!(searchQuery || selectedAuthor || selectedCategory)}
@@ -273,21 +267,19 @@ export function AudiobooksPage({
             authors={initialData.authors}
             categories={initialData.categories}
             clearFilters={clearFilters}
-            clearSearch={() => setSearchQuery('')}
-            clearAuthor={() => setSelectedAuthor('')}
-            clearCategory={() => setSelectedCategory('')}
+            clearSearch={() => handleSearchChange('')}
+            clearAuthor={() => handleAuthorChange('')}
+            clearCategory={() => handleCategoryChange('')}
           />
 
-          {/* Results grid / skeleton / empty -- same logic you had ---------- */}
+          {/* Results section */}
           <ResultsSection
-            loading={loading}
-            audiobooks={audiobooks}
-            hasFetched={hasFetched.current}
-            totalPages={totalPages}
+            audiobooks={paginatedResults.items}
+            totalPages={paginatedResults.totalPages}
             currentPage={currentPage}
-            onPageChange={page =>
-              handleFetch(page, searchQuery, selectedAuthor, selectedCategory)
-            }
+            onPageChange={handlePageChange}
+            hasNoResults={filteredAudiobooks.length === 0}
+            clearFilters={clearFilters}
           />
         </div>
       </div>
@@ -295,54 +287,26 @@ export function AudiobooksPage({
   )
 }
 
-/* ──────────── Small sub-components to keep render tidy ───────────────── */
-
-const ErrorCard = ({ message, retry }: { message: string; retry: () => void }) => (
-  <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md text-center">
-    <div className="text-red-600 dark:text-red-400 text-lg font-semibold mb-2">
-      Something went wrong
-    </div>
-    <p className="text-red-600 dark:text-red-400 mb-4">{message}</p>
-    <button
-      onClick={retry}
-      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-    >
-      Try Again
-    </button>
-  </div>
-)
-
+/* ──────────── Results Section Component ──────────────────────────────── */
 const ResultsSection = ({
-  loading,
   audiobooks,
-  hasFetched,
   totalPages,
   currentPage,
   onPageChange,
+  hasNoResults,
+  clearFilters,
 }: {
-  loading: boolean
   audiobooks: Audiobook[]
-  hasFetched: boolean
   totalPages: number
   currentPage: number
   onPageChange: (page: number) => void
+  hasNoResults: boolean
+  clearFilters: () => void
 }) => {
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-center py-4 text-gray-600 dark:text-gray-400">
-          <Loader2 className="h-5 w-5 animate-spin mr-2" />
-          Loading audiobooks…
-        </div>
-        <AudiobookGridSkeleton />
-      </div>
-    )
-  }
-
-  if (audiobooks.length === 0 && hasFetched) {
+  if (hasNoResults) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-        <EmptyState clearFilters={() => {}} />
+        <EmptyState clearFilters={clearFilters} />
       </div>
     )
   }

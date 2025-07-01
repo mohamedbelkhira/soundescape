@@ -29,7 +29,7 @@ const navigationItems = [
     items: [
       { title: "Browse", url: "/user/audiobooks", icon: Search },
       { title: "Trending", url: "/user/trending", icon: TrendingUp },
-      { title: "New Releases", url: "/user/new-releases ", icon: Star },
+      { title: "New Releases", url: "/user/newreleases ", icon: Star },
     ]
   },
   {

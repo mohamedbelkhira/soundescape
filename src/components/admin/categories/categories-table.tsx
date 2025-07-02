@@ -19,7 +19,7 @@ import { CategoryWithCount } from "@/services/category.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import UpdateCategoryDialog from "./UpdateCategoryDialog";
-
+import { truncate } from "@/lib/utils";
 interface CategoriesTableProps {
   categories: CategoryWithCount[];
   onUpdate?: () => void;
@@ -93,7 +93,7 @@ export default function CategoriesTable({
               <TableCell>
                 {category.description ? (
                   <span className="text-sm text-muted-foreground line-clamp-2">
-                    {category.description}
+                        {truncate(category.description, 50)}
                   </span>
                 ) : (
                   <span className="text-sm text-muted-foreground italic">

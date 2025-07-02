@@ -5,7 +5,7 @@ import { FavoriteService } from "@/services/favorite.service";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { audiobookId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,14 +17,14 @@ export async function GET(
       );
     }
 
-    if (!params.audiobookId?.trim()) {
+    if (!params.id?.trim()) {
       return NextResponse.json(
         { message: "Audiobook ID is required" },
         { status: 400 }
       );
     }
 
-    const isFavorited = await FavoriteService.isFavorited(session.user.id, params.audiobookId);
+    const isFavorited = await FavoriteService.isFavorited(session.user.id, params.id);
     return NextResponse.json({ isFavorited });
   } catch (error) {
     return NextResponse.json(
@@ -36,7 +36,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { audiobookId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -48,14 +48,14 @@ export async function POST(
       );
     }
 
-    if (!params.audiobookId?.trim()) {
+    if (!params.id?.trim()) {
       return NextResponse.json(
         { message: "Audiobook ID is required" },
         { status: 400 }
       );
     }
 
-    const result = await FavoriteService.toggleFavorite(session.user.id, params.audiobookId);
+    const result = await FavoriteService.toggleFavorite(session.user.id, params.id);
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof Error) {

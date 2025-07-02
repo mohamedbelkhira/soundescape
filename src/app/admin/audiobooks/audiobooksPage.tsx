@@ -131,7 +131,7 @@ export default function AudiobooksPage({ initialData }: AudiobooksPageProps) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -165,17 +165,17 @@ export default function AudiobooksPage({ initialData }: AudiobooksPageProps) {
             <div className="text-2xl font-bold text-orange-600">{unpublishedCount}</div>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Total Listeners
+              Total Authors
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalListeners}</div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Filters */}

@@ -2,6 +2,10 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { NextRequest } from 'next/server';
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { Readable } from 'stream';
+
 
 export interface UploadOptions {
   maxSize?: number; // in bytes
@@ -28,6 +32,37 @@ export async function ensureUploadDir(uploadPath: string): Promise<void> {
   }
 }
 
+
+export async function processUploadStream(
+  file: File,
+  options: UploadOptions
+): Promise<UploadResult> {
+  const { uploadDir, maxSize, allowedTypes } = options;
+
+  validateFile(file, { maxSize, allowedTypes });
+
+  const uploadPath = path.join(process.cwd(), uploadDir);
+  await ensureUploadDir(uploadPath);
+
+  const filename  = generateUniqueFilename(file.name);
+  const filePath  = path.join(uploadPath, filename);
+
+  // `file.stream()` is a WHATWG ReadableStream; convert to Node's.
+  const nodeReadable = Readable.fromWeb(file.stream() as any);
+
+  await pipeline(nodeReadable, createWriteStream(filePath));   // <- streams to disk
+
+  const relativePath = uploadDir.replace(/^uploads\//, '');
+  const url          = `/api/files/${relativePath}/${filename}`;
+
+  return {
+    filename,
+    originalName: file.name,
+    size: file.size,
+    path: filePath,
+    url,
+  };
+}
 /**
  * Generates unique filename
  */

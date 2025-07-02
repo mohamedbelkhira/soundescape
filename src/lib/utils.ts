@@ -24,3 +24,17 @@ export function slugify(text: string): string {
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+export function truncate(text: string, max = 80) {
+  return text.length > max ? text.slice(0, max - 1) + "…" : text;
+}
+
+
+export function formatDuration(seconds: number) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  if (hrs) return `${hrs}h ${mins}m ${secs}s`;
+  return `${mins}m ${secs}s`;
+}

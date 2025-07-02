@@ -144,7 +144,7 @@ export default function AudiobooksTable({
             <TableHead>Author</TableHead>
             <TableHead>Categories</TableHead>
             <TableHead>Duration</TableHead>
-            <TableHead>Stats</TableHead>
+            {/* <TableHead>Stats</TableHead> */}
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -221,7 +221,7 @@ export default function AudiobooksTable({
                     {formatDuration(audiobook.totalTime)}
                   </div>
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <div className="flex flex-col gap-1 text-xs">
                     <div className="flex items-center gap-1">
                       <Users className="h-3 w-3" />
@@ -232,7 +232,7 @@ export default function AudiobooksTable({
                       <span>{audiobook._count.bookmarks} bookmarks</span>
                     </div>
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Badge 

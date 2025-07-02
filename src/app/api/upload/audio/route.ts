@@ -1,6 +1,6 @@
 // src/app/api/upload/audio/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { processUpload, parseFormData, AUDIO_UPLOAD_OPTIONS, deleteFile } from "@/lib/file-upload";
+import { processUpload,processUploadStream, parseFormData, AUDIO_UPLOAD_OPTIONS, deleteFile } from "@/lib/file-upload";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Process the upload
-    const result = await processUpload(file, AUDIO_UPLOAD_OPTIONS);
+    const result = await processUploadStream(file, AUDIO_UPLOAD_OPTIONS);
 
     return NextResponse.json({
       message: "Audio file uploaded successfully",

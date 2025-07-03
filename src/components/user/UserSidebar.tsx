@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import Logo from "../common/logo"
 import {
   Sidebar,
   SidebarContent,
@@ -53,8 +54,8 @@ export function UserSidebar() {
     <Sidebar className="border-r border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm transition-colors">
       <SidebarHeader className="border-b border-slate-200 dark:border-slate-700 p-6 transition-colors">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
-            <Headphones className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl  text-white shadow-lg">
+            <Logo className="h-10 w-10" />
           </div>
           <div>
             <h2 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

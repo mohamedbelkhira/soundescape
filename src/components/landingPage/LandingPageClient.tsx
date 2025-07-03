@@ -8,7 +8,7 @@ import FeaturesSection from './FeaturesSection';
 import PricingSection from './PricingSection';
 import CTASection from './CTASection';
 import Footer from './Footer';
-import AboutSection from './AboutSection';
+import MissionSection from './MissionSection';
 
 export default function SoundscapeLanding() {
   const [scrollY, setScrollY] = useState(0);
@@ -25,7 +25,7 @@ export default function SoundscapeLanding() {
       <Header />
       <HeroSection scrollY={scrollY} />
       <FeaturesSection />
-      <AboutSection /> 
+      <MissionSection /> 
       <PricingSection />
       <CTASection />
       <Footer />

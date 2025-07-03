@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { motion } from 'framer-motion';
 const FeatureIcon = ({ icon, gradient }) => (
   <div className={`w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
     {icon}
@@ -23,9 +23,17 @@ const FeatureCard = ({ feature, index }) => (
 
 const FeaturesGrid = ({ features }) => (
   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-    {features.map((feature, index) => (
-      <FeatureCard key={index} feature={feature} index={index} />
-    ))}
+    {features.map((feature, i) => (
+  <motion.div
+    key={i}
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-100px' }}
+    transition={{ delay: i * 0.05 }}
+  >
+    <FeatureCard feature={feature} index={i} />
+  </motion.div>
+))}
   </div>
 );
 

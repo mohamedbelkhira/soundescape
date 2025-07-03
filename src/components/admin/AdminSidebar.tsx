@@ -9,7 +9,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react"
-
+import Logo from "../common/logo"
 import {
   Sidebar,
   SidebarContent,
@@ -84,8 +84,8 @@ export function AdminSidebar() {
     <Sidebar variant="inset" className="border-r border-gray-200">
       <SidebarHeader className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <AudioLines className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
+            <Logo className="h-8 w-8" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-gray-900">SoundScape Admin</h2>

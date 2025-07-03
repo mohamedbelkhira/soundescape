@@ -1,7 +1,8 @@
 // src/app/api/audiobooks/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { AudiobookService } from "@/services/audiobook.service";
-
+import { NotificationType } from "@prisma/client";
+import { createNotificationForEvent } from "@/app/api/notifications/create-for-all/route";
 const safePositiveInt = (value: string | null, fallback: number) => {
   const n = Number.parseInt(value ?? "", 10);
   return Number.isFinite(n) && n > 0 ? n : fallback;
@@ -139,6 +140,26 @@ export async function POST(request: NextRequest) {
       isPublished: isPublished || false,
     });
 
+    // Create notification for all users if audiobook is published
+    if (isPublished === true) {
+      try {
+        await createNotificationForEvent(
+          NotificationType.NEW_AUDIOBOOK, // Adjust this based on your NotificationType enum
+          `New Audiobook: ${title.trim()}`,
+          `A new audiobook "${title.trim()}" has been published! Check it out now.`,
+          audiobook.id, // Assuming the created audiobook has an id
+          authorId.trim(),
+          {
+            audiobookTitle: title.trim(),
+            audiobookCover: coverUrl?.trim(),
+            publishedAt: new Date().toISOString()
+          }
+        );
+      } catch (notificationError) {
+        // Log the error but don't fail the audiobook creation
+        console.error('Failed to create notification for new audiobook:', notificationError);
+      }
+    }
     return NextResponse.json(audiobook, { status: 201 });
   } catch (error) {
     if (error instanceof Error) {

@@ -73,7 +73,7 @@ export default function AudiobooksTable({
     setTogglingIds(prev => new Set(prev).add(audiobookId));
     
     try {
-      const response = await fetch(`/api/audiobooks/${audiobookId}/toggle-publish`, {
+      const response = await fetch(`/api/audiobooks/${audiobookId}/toggle-published`, {
         method: "PATCH",
       });
 
@@ -144,7 +144,7 @@ export default function AudiobooksTable({
             <TableHead>Author</TableHead>
             <TableHead>Categories</TableHead>
             <TableHead>Duration</TableHead>
-            {/* <TableHead>Stats</TableHead> */}
+            <TableHead>Stats</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -221,26 +221,33 @@ export default function AudiobooksTable({
                     {formatDuration(audiobook.totalTime)}
                   </div>
                 </TableCell>
-                {/* <TableCell>
+                <TableCell>
                   <div className="flex flex-col gap-1 text-xs">
                     <div className="flex items-center gap-1">
                       <Users className="h-3 w-3" />
-                      <span>{audiobook._count.listeningProgress} listeners</span>
+                      <span>{audiobook._count.favorites} users liked</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Bookmark className="h-3 w-3" />
-                      <span>{audiobook._count.bookmarks} bookmarks</span>
+                      <Eye className="h-3 w-3" />
+                      <span>{audiobook.viewCount} vues</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      <span>{audiobook.viewCount} Played</span>
                     </div>
                   </div>
-                </TableCell> */}
+                </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      variant={audiobook.isPublished ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      {audiobook.isPublished ? "Published" : "Unpublished"}
-                    </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant={audiobook.isPublished ? "default" : "secondary"}
+                    className="text-xs"
+                  >
+                    {audiobook.isPublished ? "Published" : "Unpublished"}
+                  </Badge>
+
+                  {/* Render the toggle button only while unpublished */}
+                  {!audiobook.isPublished && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -248,13 +255,10 @@ export default function AudiobooksTable({
                       onClick={() => handleTogglePublish(audiobook.id)}
                       disabled={togglingIds.has(audiobook.id)}
                     >
-                      {audiobook.isPublished ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      <Eye className="h-4 w-4" />
                     </Button>
-                  </div>
+                  )}
+                </div>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm text-muted-foreground">

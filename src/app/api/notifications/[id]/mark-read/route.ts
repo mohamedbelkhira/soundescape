@@ -18,25 +18,17 @@ export async function PATCH(
       );
     }
 
-    // Check if notification exists and user owns it
-    const existingNotification = await NotificationService.getById(params.id);
-    if (!existingNotification) {
+    // Check if notification exists for this user
+    const notification = await NotificationService.getByIdForUser(params.id, session.user.id);
+    if (!notification) {
       return NextResponse.json(
         { message: "Notification not found" },
         { status: 404 }
       );
     }
 
-    if (existingNotification.userId && existingNotification.userId !== session.user.id) {
-      return NextResponse.json(
-        { message: "Forbidden" },
-        { status: 403 }
-      );
-    }
-
-    const notification = await NotificationService.markAsRead(params.id);
-
-    return NextResponse.json(notification);
+    const userNotification = await NotificationService.markAsRead(params.id, session.user.id);
+    return NextResponse.json(userNotification);
   } catch (error) {
     return NextResponse.json(
       { message: error instanceof Error ? error.message : "Internal server error" },

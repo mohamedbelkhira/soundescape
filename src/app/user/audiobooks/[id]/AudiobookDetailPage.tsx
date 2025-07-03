@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AudiobookCover } from '@/components/user/audiobooks/detailpage/AudiobookCover';
 import { AudioPlayerControls } from '@/components/user/audiobooks/detailpage/AudioPlayerControls';
@@ -34,6 +34,15 @@ interface Props { audiobook: Audiobook | null }
 
 export function AudiobookDetailPage({ audiobook }: Props) {
   /* ------------ hook (initialised before any early-return) ---- */
+  const [viewRecorded, setViewRecorded] = useState(false)
+  useEffect(() => {
+    if (!viewRecorded && audiobook) {
+      fetch(`/api/audiobooks/${audiobook.id}/view`, { method: 'PATCH' })
+        .catch(console.error)
+        .finally(() => setViewRecorded(true)); // make sure we never fire twice
+    }
+  }, [audiobook, viewRecorded]);
+  
   const {
     isPlaying,
     currentTime,

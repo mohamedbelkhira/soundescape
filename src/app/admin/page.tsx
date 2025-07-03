@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,21 +12,6 @@ export default function AdminPage() {
   return (
     <AuthGuard requireAdmin>
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white border-b">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome, {session?.user?.name || "Admin"}!</p>
-            </div>
-            <Button 
-              variant="outline" 
-              onClick={() => signOut({ callbackUrl: "/" })}
-            >
-              Sign Out
-            </Button>
-          </div>
-        </header>
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
@@ -98,21 +83,6 @@ export default function AdminPage() {
                     <span className="font-semibold">Analytics</span>
                     <span className="text-sm text-gray-600">View platform statistics</span>
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  Latest system activity and user actions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 text-gray-500">
-                  No recent activity to display. Activity will appear here as users interact with the platform.
                 </div>
               </CardContent>
             </Card>

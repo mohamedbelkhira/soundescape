@@ -1,58 +1,315 @@
 // src/services/notification.service.ts
 import { db as prisma } from '@/lib/db';
-import { Notification, Prisma } from '@prisma/client';
+import { Notification, UserNotification, Prisma, NotificationType } from '@prisma/client';
 
 export interface NotificationInput {
   title: string;
   message: string;
-  type?: string;
-  userId?: string;
-  actionUrl?: string;
+  type?: NotificationType;
+  audiobookId?: string;
+  authorId?: string;
+  metadata?: any;
 }
 
 export interface NotificationFilters {
   userId?: string;
-  type?: string;
+  type?: NotificationType;
   isRead?: boolean;
   search?: string;
   limit?: number;
   offset?: number;
 }
 
+export type NotificationWithUserData = Notification & {
+  userNotifications: UserNotification[];
+};
+
 export class NotificationService {
   /**
-   * Create a new notification
+   * Create a notification for all users
    */
-  static async create(data: NotificationInput): Promise<Notification> {
+  static async createForAllUsers(data: NotificationInput): Promise<Notification> {
     try {
-      return await prisma.notification.create({
+      // Get all user IDs
+      const users = await prisma.user.findMany({
+        select: { id: true },
+        where: { role: 'USER' } // Only send to regular users, not admins
+      });
+
+      const notification = await prisma.notification.create({
         data: {
           title: data.title.trim(),
           message: data.message.trim(),
           type: data.type || 'INFO',
-          userId: data.userId,
-          actionUrl: data.actionUrl,
-          isRead: false,
+          audiobookId: data.audiobookId,
+          authorId: data.authorId,
+          metadata: data.metadata,
+          userNotifications: {
+            create: users.map(user => ({
+              userId: user.id,
+              isRead: false,
+            }))
+          }
         },
+        include: {
+          userNotifications: true
+        }
       });
+
+      return notification;
     } catch (error) {
-      throw new Error('Failed to create notification');
+      throw new Error('Failed to create notification for all users');
     }
   }
 
   /**
-   * Get all notifications with optional filtering and pagination
+   * Create a notification for specific users
    */
-  static async getAll(filters: NotificationFilters = {}): Promise<{
-    notifications: Notification[];
+  static async createForUsers(data: NotificationInput, userIds: string[]): Promise<Notification> {
+    try {
+      const notification = await prisma.notification.create({
+        data: {
+          title: data.title.trim(),
+          message: data.message.trim(),
+          type: data.type || 'INFO',
+          audiobookId: data.audiobookId,
+          authorId: data.authorId,
+          metadata: data.metadata,
+          userNotifications: {
+            create: userIds.map(userId => ({
+              userId,
+              isRead: false,
+            }))
+          }
+        },
+        include: {
+          userNotifications: true
+        }
+      });
+
+      return notification;
+    } catch (error) {
+      throw new Error('Failed to create notification for users');
+    }
+  }
+
+  /**
+   * Get notifications for a specific user
+   */
+  static async getByUserId(userId: string, filters: NotificationFilters = {}): Promise<{
+    notifications: NotificationWithUserData[];
+    total: number;
+    unreadCount: number;
+  }> {
+    const { limit = 10, offset = 0, isRead, type, search } = filters;
+
+    const whereClause: Prisma.NotificationWhereInput = {
+      isActive: true,
+      userNotifications: {
+        some: {
+          userId,
+          ...(isRead !== undefined && { isRead })
+        }
+      },
+      ...(type && { type }),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { message: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    const [notifications, total, unreadCount] = await Promise.all([
+      prisma.notification.findMany({
+        where: whereClause,
+        include: {
+          userNotifications: {
+            where: { userId }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.notification.count({ where: whereClause }),
+      prisma.userNotification.count({ 
+        where: { 
+          userId, 
+          isRead: false,
+          notification: { isActive: true }
+        } 
+      }),
+    ]);
+
+    return { notifications, total, unreadCount };
+  }
+
+  /**
+   * Get notification by ID for a specific user
+   */
+  static async getByIdForUser(notificationId: string, userId: string): Promise<NotificationWithUserData | null> {
+    return await prisma.notification.findFirst({
+      where: {
+        id: notificationId,
+        isActive: true,
+        userNotifications: {
+          some: { userId }
+        }
+      },
+      include: {
+        userNotifications: {
+          where: { userId }
+        }
+      }
+    });
+  }
+
+  /**
+   * Mark notification as read for a user
+   */
+  static async markAsRead(notificationId: string, userId: string): Promise<UserNotification> {
+    try {
+      const userNotification = await prisma.userNotification.findFirst({
+        where: {
+          notificationId,
+          userId
+        }
+      });
+
+      if (!userNotification) {
+        throw new Error('Notification not found for user');
+      }
+
+      return await prisma.userNotification.update({
+        where: {
+          id: userNotification.id
+        },
+        data: {
+          isRead: true,
+          readAt: new Date()
+        }
+      });
+    } catch (error) {
+      throw new Error('Failed to mark notification as read');
+    }
+  }
+
+  /**
+   * Mark notification as unread for a user
+   */
+  static async markAsUnread(notificationId: string, userId: string): Promise<UserNotification> {
+    try {
+      const userNotification = await prisma.userNotification.findFirst({
+        where: {
+          notificationId,
+          userId
+        }
+      });
+
+      if (!userNotification) {
+        throw new Error('Notification not found for user');
+      }
+
+      return await prisma.userNotification.update({
+        where: {
+          id: userNotification.id
+        },
+        data: {
+          isRead: false,
+          readAt: null
+        }
+      });
+    } catch (error) {
+      throw new Error('Failed to mark notification as unread');
+    }
+  }
+
+  /**
+   * Mark all notifications as read for a user
+   */
+  static async markAllAsRead(userId: string): Promise<number> {
+    const result = await prisma.userNotification.updateMany({
+      where: { 
+        userId,
+        isRead: false,
+        notification: { isActive: true }
+      },
+      data: { 
+        isRead: true,
+        readAt: new Date()
+      },
+    });
+    return result.count;
+  }
+
+  /**
+   * Delete notification for a user (soft delete - just removes the user notification)
+   */
+  static async deleteForUser(notificationId: string, userId: string): Promise<void> {
+    try {
+      await prisma.userNotification.deleteMany({
+        where: {
+          notificationId,
+          userId
+        }
+      });
+    } catch (error) {
+      throw new Error('Failed to delete notification for user');
+    }
+  }
+
+  /**
+   * Delete all notifications for a user
+   */
+  static async deleteAllForUser(userId: string): Promise<number> {
+    const result = await prisma.userNotification.deleteMany({
+      where: { 
+        userId,
+        notification: { isActive: true }
+      },
+    });
+    return result.count;
+  }
+
+  /**
+   * Get unread count for a user
+   */
+  static async getUnreadCount(userId: string): Promise<number> {
+    return await prisma.userNotification.count({
+      where: { 
+        userId,
+        isRead: false,
+        notification: { isActive: true }
+      },
+    });
+  }
+
+  /**
+   * Bulk delete notifications for a user
+   */
+  static async bulkDeleteForUser(notificationIds: string[], userId: string): Promise<number> {
+    const result = await prisma.userNotification.deleteMany({
+      where: { 
+        notificationId: { in: notificationIds },
+        userId 
+      },
+    });
+    return result.count;
+  }
+
+  /**
+   * Admin: Get all notifications with stats
+   */
+  static async getAllForAdmin(filters: NotificationFilters = {}): Promise<{
+    notifications: (Notification & { _count: { userNotifications: number } })[];
     total: number;
   }> {
-    const { userId, type, isRead, search, limit = 10, offset = 0 } = filters;
+    const { limit = 10, offset = 0, type, search } = filters;
 
-    const where: Prisma.NotificationWhereInput = {
-      ...(userId && { userId }),
+    const whereClause: Prisma.NotificationWhereInput = {
+      isActive: true,
       ...(type && { type }),
-      ...(isRead !== undefined && { isRead }),
       ...(search && {
         OR: [
           { title: { contains: search, mode: 'insensitive' } },
@@ -63,192 +320,33 @@ export class NotificationService {
 
     const [notifications, total] = await Promise.all([
       prisma.notification.findMany({
-        where,
+        where: whereClause,
+        include: {
+          _count: {
+            select: { userNotifications: true }
+          }
+        },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
       }),
-      prisma.notification.count({ where }),
+      prisma.notification.count({ where: whereClause }),
     ]);
 
     return { notifications, total };
   }
 
   /**
-   * Get notification by ID
+   * Admin: Delete notification completely (hard delete)
    */
-  static async getById(id: string): Promise<Notification | null> {
-    return await prisma.notification.findUnique({
-      where: { id },
-    });
-  }
-
-  /**
-   * Get notifications for a specific user
-   */
-  static async getByUserId(userId: string, filters: NotificationFilters = {}): Promise<{
-    notifications: Notification[];
-    total: number;
-    unreadCount: number;
-  }> {
-    const { limit = 10, offset = 0, isRead, type } = filters;
-
-    const where: Prisma.NotificationWhereInput = {
-      userId,
-      ...(isRead !== undefined && { isRead }),
-      ...(type && { type }),
-    };
-
-    const [notifications, total, unreadCount] = await Promise.all([
-      prisma.notification.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        take: limit,
-        skip: offset,
-      }),
-      prisma.notification.count({ where }),
-      prisma.notification.count({ 
-        where: { userId, isRead: false } 
-      }),
-    ]);
-
-    return { notifications, total, unreadCount };
-  }
-
-  /**
-   * Update notification
-   */
-  static async update(id: string, data: Partial<NotificationInput>): Promise<Notification> {
+  static async deleteCompletely(notificationId: string): Promise<void> {
     try {
-      return await prisma.notification.update({
-        where: { id },
-        data: {
-          ...(data.title && { title: data.title.trim() }),
-          ...(data.message && { message: data.message.trim() }),
-          ...(data.type && { type: data.type }),
-          ...(data.actionUrl !== undefined && { actionUrl: data.actionUrl }),
-        },
+      await prisma.notification.update({
+        where: { id: notificationId },
+        data: { isActive: false }
       });
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Notification not found');
-        }
-      }
-      throw new Error('Failed to update notification');
-    }
-  }
-
-  /**
-   * Delete notification
-   */
-  static async delete(id: string): Promise<void> {
-    try {
-      await prisma.notification.delete({
-        where: { id },
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Notification not found');
-        }
-      }
       throw new Error('Failed to delete notification');
     }
-  }
-
-  /**
-   * Mark notification as read
-   */
-  static async markAsRead(id: string): Promise<Notification> {
-    try {
-      return await prisma.notification.update({
-        where: { id },
-        data: { isRead: true },
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Notification not found');
-        }
-      }
-      throw new Error('Failed to mark notification as read');
-    }
-  }
-
-  /**
-   * Mark notification as unread
-   */
-  static async markAsUnread(id: string): Promise<Notification> {
-    try {
-      return await prisma.notification.update({
-        where: { id },
-        data: { isRead: false },
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Notification not found');
-        }
-      }
-      throw new Error('Failed to mark notification as unread');
-    }
-  }
-
-  /**
-   * Mark all notifications as read for a user
-   */
-  static async markAllAsRead(userId: string): Promise<number> {
-    const result = await prisma.notification.updateMany({
-      where: { 
-        userId,
-        isRead: false,
-      },
-      data: { isRead: true },
-    });
-    return result.count;
-  }
-
-  /**
-   * Get unread count for a user
-   */
-  static async getUnreadCount(userId: string): Promise<number> {
-    return await prisma.notification.count({
-      where: { 
-        userId,
-        isRead: false,
-      },
-    });
-  }
-
-  /**
-   * Bulk delete notifications
-   */
-  static async bulkDelete(ids: string[]): Promise<number> {
-    const result = await prisma.notification.deleteMany({
-      where: { id: { in: ids } },
-    });
-    return result.count;
-  }
-
-  /**
-   * Delete all notifications for a user
-   */
-  static async deleteAllForUser(userId: string): Promise<number> {
-    const result = await prisma.notification.deleteMany({
-      where: { userId },
-    });
-    return result.count;
-  }
-
-  /**
-   * Get notifications for dropdown/select
-   */
-  static async getForSelect(userId?: string): Promise<Pick<Notification, 'id' | 'title'>[]> {
-    return await prisma.notification.findMany({
-      where: userId ? { userId } : undefined,
-      select: { id: true, title: true },
-      orderBy: { createdAt: 'desc' },
-    });
   }
 }

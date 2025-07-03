@@ -1,3 +1,4 @@
+// app/api/notifications/mark-all-read/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -15,10 +16,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     const count = await NotificationService.markAllAsRead(session.user.id);
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: `${count} notifications marked as read`,
-      count 
+      count
     });
   } catch (error) {
     return NextResponse.json(

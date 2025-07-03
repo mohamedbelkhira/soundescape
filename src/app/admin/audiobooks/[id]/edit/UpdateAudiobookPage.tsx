@@ -316,6 +316,7 @@ export default function UpdateAudiobookPage({ audiobook }: UpdateAudiobookPagePr
         const error = await response.json()
         throw new Error(error.message || 'Failed to update audiobook')
       }
+      
 
       toast.success('Audiobook updated successfully')
       router.push('/admin/audiobooks')

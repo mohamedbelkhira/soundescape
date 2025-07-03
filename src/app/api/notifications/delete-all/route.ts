@@ -16,10 +16,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     const count = await NotificationService.deleteAllForUser(session.user.id);
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: `${count} notifications deleted`,
-      count 
+      count
     });
   } catch (error) {
     return NextResponse.json(

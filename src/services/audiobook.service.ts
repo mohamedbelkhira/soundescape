@@ -399,7 +399,6 @@ export class AudiobookService {
     try {
       const audiobook = await prisma.audiobook.findUnique({
         where: { id },
-        select: { isPublished: true },
       });
 
       if (!audiobook) {
@@ -483,4 +482,40 @@ export class AudiobookService {
   }> {
     return this.getAll({ search: query, limit, offset });
   }
+  /** Increase the view counter (opened in UI, not necessarily played) */
+static async incrementView(id: string): Promise<Audiobook> {
+  try {
+    return await prisma.audiobook.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },   // atomic, race-safe
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      throw new Error('Audiobook not found');
+    }
+    throw new Error('Failed to increment view counter');
+  }
+}
+
+/** Increase the play counter (user hit “Play”) */
+static async incrementPlay(id: string): Promise<Audiobook> {
+  try {
+    return await prisma.audiobook.update({
+      where: { id },
+      data: { playCount: { increment: 1 } },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      throw new Error('Audiobook not found');
+    }
+    throw new Error('Failed to increment play counter');
+  }
+}
+
 }

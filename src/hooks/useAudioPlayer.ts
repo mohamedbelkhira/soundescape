@@ -27,7 +27,6 @@ export const useAudioPlayer = (audioUrl: string | null) => {
       return;
     }
 
-    // Ensure loading is true when a new URL is provided
     setIsLoading(true);
     setError(null); // Clear previous errors
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, BookOpen, Users, Eye, EyeOff } from 'lucide-react'
+import { Search, BookOpen, Eye, EyeOff } from 'lucide-react'
 import AudiobooksTable from '@/components/admin/audiobooks/audiobooks-table'
 import CustomPagination from '@/components/common/custom-pagination'
 import { toast } from 'sonner'
@@ -110,15 +110,12 @@ export default function AudiobooksPage({ initialData }: AudiobooksPageProps) {
     setCurrentPage(page)
   }
 
-  // Calculate stats from current data
+
   const publishedCount = data.audiobooks.filter(a => a.isPublished).length
   const unpublishedCount = data.audiobooks.filter(a => !a.isPublished).length
-//   const uniqueAuthors = new Set(data.audiobooks.map(a => a.author.id)).size
-  const totalListeners = data.audiobooks.reduce((sum, a) => sum + a._count.listeningProgress, 0)
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Audiobooks</h1>
@@ -127,10 +124,8 @@ export default function AudiobooksPage({ initialData }: AudiobooksPageProps) {
           </p>
         </div>
         <AddButton label="Add Audiobook" href='/admin/audiobooks/add' />
-        {/* Add Audiobook Button would go here */}
       </div>
 
-      {/* Stats Cards */}
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -165,20 +160,9 @@ export default function AudiobooksPage({ initialData }: AudiobooksPageProps) {
             <div className="text-2xl font-bold text-orange-600">{unpublishedCount}</div>
           </CardContent>
         </Card>
-        {/* <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Total Authors
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalListeners}</div>
-          </CardContent>
-        </Card> */}
+  
       </div>
 
-      {/* Filters */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-4">

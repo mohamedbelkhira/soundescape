@@ -4,12 +4,9 @@
 import * as React from "react"
 import {
   AudioLines,
-  BarChart3,
   BookOpen,
   Home,
-  Settings,
   Users,
-  Shield,
   UsersRound,
 } from "lucide-react"
 
@@ -36,11 +33,11 @@ const navigationItems = [
     url: "/admin",
     icon: Home,
   },
-  {
-    title: "Analytics",
-    url: "/admin/analytics",
-    icon: BarChart3,
-  },
+  // {
+  //   title: "Analytics",
+  //   url: "/admin/analytics",
+  //   icon: BarChart3,
+  // },
   {
     title: "Users",
     url: "/admin/users",
@@ -67,18 +64,18 @@ const managementItems = [
   },
 ]
 
-const systemItems = [
-  {
-    title: "Permissions",
-    url: "/admin/permissions",
-    icon: Shield,
-  },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
-]
+// const systemItems = [
+//   {
+//     title: "Permissions",
+//     url: "/admin/permissions",
+//     icon: Shield,
+//   },
+//   {
+//     title: "Settings",
+//     url: "/admin/settings",
+//     icon: Settings,
+//   },
+// ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
@@ -91,7 +88,7 @@ export function AdminSidebar() {
             <AudioLines className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900">AudioBook Admin</h2>
+            <h2 className="text-sm font-semibold text-gray-900">SoundScape Admin</h2>
             <p className="text-xs text-gray-500">Management Panel</p>
           </div>
         </div>
@@ -156,7 +153,7 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium">
             System
           </SidebarGroupLabel>
@@ -183,7 +180,7 @@ export function AdminSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t border-gray-200">

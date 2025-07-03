@@ -26,6 +26,7 @@ interface User {
   id: string; name: string | null; email: string;
   role: Role; subscriptionType: SubscriptionType;
 }
+
 export default function UsersTable({ initialUsers, stats }: {
   initialUsers: User[]; stats: Stats;
 }) {
@@ -33,57 +34,67 @@ export default function UsersTable({ initialUsers, stats }: {
   const [users, setUsers]   = useState(initialUsers);
   const [pending, startTx]  = useTransition();
 
+  /* keep rows in sync when the server sends fresh data */
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
   /* dialog */
-  const [open, setOpen]     = useState(false);
-  const [editing, setEdit]  = useState<User | null>(null);
-  const [form, setForm]     = useState<Record<string, string>>({
+  const [open,  setOpen]  = useState(false);
+  const [edit,  setEdit]  = useState<User | null>(null);
+  const [form,  setForm]  = useState<Record<string, string>>({
     name: '', email: '', password: '', role: 'USER', subscriptionType: 'FREE',
   });
 
   /* filters */
-  const [search, setSearch] = useState('');
+  const [search,     setSearch]     = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL');
 
-  /* debounce search */
+  /* debounce fetch on filter change */
   useEffect(() => {
     const t = setTimeout(() => {
-      startTx(async () => {
-        setUsers(await listUsers(search, roleFilter));
-      });
+      startTx(async () => setUsers(await listUsers(search, roleFilter)));
     }, 300);
     return () => clearTimeout(t);
   }, [search, roleFilter]);
 
-  /* ---------- CRUD helpers ---------- */
+  /* ---------- helpers ---------- */
   const openForm = (u?: User) => {
     setEdit(u ?? null);
     setForm(u ? { ...u, password: '' } as any
             : { name: '', email: '', password: '', role: 'USER', subscriptionType: 'FREE' });
     setOpen(true);
   };
+
   const submit = () => {
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => v && fd.append(k, v));
     startTx(async () => {
-      editing ? await updateUser(editing.id, fd) : await createUser(fd);
+      edit ? await updateUser(edit.id, fd) : await createUser(fd);
       setOpen(false);
+      /* refresh table with current filters */
+      setUsers(await listUsers(search, roleFilter));
     });
   };
+
   const remove = (id: string) =>
     confirm('Delete user?') &&
-    startTx(async () => { await deleteUser(id); });
+    startTx(async () => {
+      await deleteUser(id);
+      setUsers(await listUsers(search, roleFilter));
+    });
 
   /* ---------- UI ---------- */
   return (
     <>
-      {/* --- stats bar --- */}
+      {/* --- stats --- */}
       <section className="grid gap-4 sm:grid-cols-3">
-        <StatCard icon={<Users2 className="w-5 h-5" />} label="Total users"    value={stats.total} />
-        <StatCard icon={<ShieldCheck className="w-5 h-5" />} label="Admins"     value={stats.admins} />
-        <StatCard icon={<DollarSign className="w-5 h-5" />} label="Paid plans"  value={stats.paid} />
+        <StatCard icon={<Users2  className="w-5 h-5" />} label="Total users" value={stats.total}   />
+        <StatCard icon={<ShieldCheck className="w-5 h-5" />} label="Admins"      value={stats.admins} />
+        <StatCard icon={<DollarSign className="w-5 h-5" />} label="Paid plans"  value={stats.paid}   />
       </section>
 
-      {/* --- filters + add button --- */}
+      {/* --- filters --- */}
       <section className="flex flex-wrap items-center gap-3 mt-6">
         <Input
           placeholder="Search name / email"
@@ -143,17 +154,28 @@ export default function UsersTable({ initialUsers, stats }: {
       {/* --- dialog --- */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{editing ? 'Edit user' : 'Create user'}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{edit ? 'Edit user' : 'Create user'}</DialogTitle>
+          </DialogHeader>
+
           <form
             onSubmit={e => { e.preventDefault(); submit(); }}
             className="space-y-4 max-h-[70vh] overflow-y-auto"
           >
-            <Input placeholder="Name"  value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-            <Input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-            {!editing && (
+            <Input placeholder="Name"
+                   value={form.name}
+                   onChange={e => setForm({ ...form, name: e.target.value })} />
+
+            <Input placeholder="Email"
+                   value={form.email}
+                   onChange={e => setForm({ ...form, email: e.target.value })} />
+
+            {!edit && (
               <Input type="password" placeholder="Password"
-                value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+                     value={form.password}
+                     onChange={e => setForm({ ...form, password: e.target.value })} />
             )}
+
             <Select value={form.role} onValueChange={v => setForm({ ...form, role: v })}>
               <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
               <SelectContent>
@@ -161,8 +183,9 @@ export default function UsersTable({ initialUsers, stats }: {
                 <SelectItem value="ADMIN">ADMIN</SelectItem>
               </SelectContent>
             </Select>
+
             <Select value={form.subscriptionType}
-              onValueChange={v => setForm({ ...form, subscriptionType: v })}>
+                    onValueChange={v => setForm({ ...form, subscriptionType: v })}>
               <SelectTrigger><SelectValue placeholder="Plan" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="FREE">FREE</SelectItem>
@@ -170,7 +193,10 @@ export default function UsersTable({ initialUsers, stats }: {
                 <SelectItem value="PREMIUM_PLUS">PREMIUM_PLUS</SelectItem>
               </SelectContent>
             </Select>
-            <DialogFooter><Button type="submit" disabled={pending}>Save</Button></DialogFooter>
+
+            <DialogFooter>
+              <Button type="submit" disabled={pending}>Save</Button>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
@@ -178,8 +204,10 @@ export default function UsersTable({ initialUsers, stats }: {
   );
 }
 
-/* small helper */
-const StatCard = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) => (
+/* ---- stat card helper ---- */
+const StatCard = ({
+  icon, label, value,
+}: { icon: React.ReactNode; label: string; value: number }) => (
   <Card className="bg-gradient-to-br from-blue-50/50 dark:from-slate-800/30">
     <CardHeader className="flex flex-row items-center justify-between pb-2">
       <CardTitle className="text-sm font-medium">{label}</CardTitle>

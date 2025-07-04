@@ -27,7 +27,7 @@ export default function AdminLayout({
                   <SidebarTrigger className="hover:bg-gray-100" />
                   <div className="flex flex-col">
                     <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
-                    <p className="text-xs text-gray-500">Audiobook Platform Management</p>
+                    <p className="text-xs text-gray-500">SoundScape Platform Management</p>
                   </div>
                 </div>
                 <AdminUserDropdown />

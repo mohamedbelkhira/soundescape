@@ -185,7 +185,7 @@ export function AdminSidebar() {
 
       <SidebarFooter className="p-4 border-t border-gray-200">
         <div className="text-xs text-gray-500 text-center">
-          <p>&copy; 2024 AudioBook Platform</p>
+          <p>&copy; 2025 SoundScape</p>
           <p>Admin Dashboard v1.0</p>
         </div>
       </SidebarFooter>

@@ -5,7 +5,7 @@ import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
-  title: "AudioBook Platform",
+  title: "SoundScape",
   description: "Your personal audiobook library",
 }
 export default function RootLayout({

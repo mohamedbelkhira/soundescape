@@ -68,7 +68,7 @@ const SocialLinks = () => (
     <h3 className="text-white font-semibold mb-4 text-lg">Follow Us</h3>
     <div className="flex space-x-4">
       <a 
-        href="https://instagram.com" 
+        href="https://www.instagram.com/ohmacore/" 
         target="_blank" 
         rel="noopener noreferrer"
         className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white hover:scale-110 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 group"
@@ -174,7 +174,7 @@ const FooterCopyright = () => (
   <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400">
     <p>&copy; 2025 Soundscape. All rights reserved.</p>
     <div className="flex space-x-6 mt-4 md:mt-0">
-      <a href="#" className="hover:text-white transition-colors duration-300">Made by Ohmacore</a>
+      <a href="https://ohma-core.vercel.app/" className="hover:text-white transition-colors duration-300">Made by Ohmacore</a>
       {/* <a href="#" className="hover:text-white transition-colors duration-300">Terms of Service</a>
       <a href="#" className="hover:text-white transition-colors duration-300">Cookie Policy</a> */}
     </div>

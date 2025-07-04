@@ -17,11 +17,11 @@ import { Button } from "@/components/ui/button";
 import EditAction from "@/components/common/edit-action";
 import DeleteDialog from "@/components/common/delete-dialog";
 import TableWrapper from "@/components/common/table-wrapper";
-import { Eye, EyeOff, Play, Clock, Users, Bookmark } from "lucide-react";
+import { Eye, Play, Clock, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { AudiobookWithDetails } from "@/services/audiobook.service";
-
+import { truncate } from "@/lib/utils";
 interface AudiobooksTableProps {
   audiobooks: AudiobookWithDetails[];
   onUpdate?: () => void;
@@ -184,7 +184,7 @@ export default function AudiobooksTable({
                       </div>
                       {audiobook.description && (
                         <div className="text-sm text-muted-foreground line-clamp-1">
-                          {audiobook.description}
+                          {truncate(audiobook.description, 50)}
                         </div>
                       )}
                     </div>

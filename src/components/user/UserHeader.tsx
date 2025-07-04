@@ -2,9 +2,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Search, Bell, Moon, Sun, X, Clock, User, BookOpen, AlertCircle, Info, Star, Shield, AlertTriangle } from "lucide-react"
+import { Search, Bell, Moon, Sun, X, Clock, User, BookOpen, Info, Star, Shield, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { UserDropdown } from "@/components/user/UserDropdown"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
@@ -101,7 +100,6 @@ const formatTimeAgo = (dateString: string) => {
 export function UserHeader() {
   const { data: session } = useSession()
   const { theme, toggleTheme } = useTheme()
-  const [searchQuery, setSearchQuery] = useState("")
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -545,19 +543,7 @@ export function UserHeader() {
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
-      <div className="md:hidden px-6 pb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-          <Input
-            type="search"
-            placeholder="Search audiobooks..."
-            className="w-full pl-10 pr-4 h-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors rounded-xl"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
+     
     </header>
   )
 }

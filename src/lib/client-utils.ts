@@ -11,6 +11,16 @@ export const formatAudioUrl = (url: string | null): string => {
     // Ensure this matches your backend route for serving files
     return `/api/files/${cleanPath}`
   }
+
+
+  export const formatAudioUrl2 = (filename: string) => {
+    //function to remove names ("api/files/audio") AND PRINT THE FILENAME 
+    const cleanFilename = filename.replace(/^\/api\/files\/audio\//, '');
+    console.log(cleanFilename);
+    
+    return  `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/audiobooks/${cleanFilename.replace(/\.mp3$/, '')}/stream`
+  }
+  
   
   export const formatCoverUrl = (url: string | null): string => {
     if (!url) return ''

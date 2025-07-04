@@ -61,14 +61,11 @@ export function AudiobookDetailPage({ audiobook }: Props) {
   if (!audiobook) {
     return <AudiobookErrorState error="Audiobook data could not be loaded." />;
   }
-
   /* ------------ callbacks passed to the controls -------------- */
   const handlePlayPause = () => (isPlaying ? pause() : play());
   const handleSeek      = (sec: number) => seek(sec);
-
   const handleSkipBack  = () => seek(Math.max(currentTime - SKIP_INTERVAL, 0));
   const handleSkipFwd   = () => seek(Math.min(currentTime + SKIP_INTERVAL, duration));
-
   const handleVolume    = (v: number) => setVolume(v);
 
   /* ------------ UI -------------------------------------------- */

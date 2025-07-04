@@ -72,40 +72,6 @@ export function AdminUserDropdown() {
           </div>
         </DropdownMenuLabel>
         
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem asChild>
-          <Link href="/admin/profile" className="cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </Link>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem asChild>
-          <Link href="/admin/settings" className="cursor-pointer">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Admin Settings</span>
-          </Link>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem asChild>
-          <Link href="/admin/notifications" className="cursor-pointer">
-            <Bell className="mr-2 h-4 w-4" />
-            <span>Notifications</span>
-          </Link>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem asChild>
-          <Link href="/admin/help" className="cursor-pointer">
-            <HelpCircle className="mr-2 h-4 w-4" />
-            <span>Help & Support</span>
-          </Link>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        
         <DropdownMenuItem 
           className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
           onClick={handleSignOut}

@@ -1,6 +1,10 @@
 // src/app/user/audiobooks/page.tsx
 import { AudiobooksPage } from "./AudiobooksPage"
 
+export const dynamic = 'force-dynamic'
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+
 interface Author {
   id: string
   name: string
@@ -61,54 +65,41 @@ const fetchAudiobooks = async (
     ...(categoryId && { categoryId })
   })
 
-  // Use full URL for server-side fetching
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
-  console.log("baseUrl:", baseUrl)
-  const res = await fetch(`${baseUrl}/api/audiobooks?${params}`)
-  if (!res.ok) throw new Error('Failed to fetch audiobooks', { cause: res.statusText })
+  const res = await fetch(`${BASE_URL}/api/audiobooks?${params}`, {
+    next: { revalidate: 300 },
+  })
+  
+  if (!res.ok) throw new Error('Failed to fetch audiobooks')
   return res.json()
 }
 
-const fetchAuthors = async (): Promise<Author[]> => {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
-    const res = await fetch(`${baseUrl}/api/authors`)
-    if (!res.ok) return []
-    const data: AuthorsResponse = await res.json()
-    return data.authors || []
-  } catch (err) {
-    console.error('Failed to fetch authors:', err)
-    return []
-  }
+const fetchAuthors = async (): Promise<AuthorsResponse> => {
+  return fetch(`${BASE_URL}/api/authors`, {
+    next: { revalidate: 300 },
+  }).then(r => r.ok ? r.json() : { authors: [] })
 }
 
-const fetchCategories = async (): Promise<Array<{ id: string; title: string }>> => {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
-    const res = await fetch(`${baseUrl}/api/categories`)
-    if (!res.ok) return []
-    const data: CategoriesResponse = await res.json()
-    return data.categories || []
-  } catch (err) {
-    console.error('Failed to fetch categories:', err)
-    return []
-  }
+const fetchCategories = async (): Promise<CategoriesResponse> => {
+  return fetch(`${BASE_URL}/api/categories`, {
+    next: { revalidate: 300 },
+  }).then(r => r.ok ? r.json() : { categories: [] })
 }
 
 export default async function Page() {
   // Fetch initial data server-side
-  const [initialAudiobooks, authors, categories] = await Promise.all([
-    fetchAudiobooks().catch(() => ({ 
-      audiobooks: [], 
-      pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } 
+  const [initialAudiobooks, { authors }, { categories }] = await Promise.all([
+    fetchAudiobooks().catch(() => ({
+      audiobooks: [],
+      pagination: { page: 1, limit: 12, total: 0, totalPages: 0 }
     })),
     fetchAuthors(),
     fetchCategories()
   ])
 
-  console.log('authors:', authors)  
+  console.log('authors:', authors)
   console.log('categories:', categories)
   console.log('initialAudiobooks:', initialAudiobooks)
+
   return (
     <AudiobooksPage
       title="All Audiobooks"

@@ -17,7 +17,8 @@ import {
   User,
   LogOut,
   Crown,
-  Activity
+  Activity,
+  Gift
 } from "lucide-react"
 
 export function UserDropdown() {
@@ -81,8 +82,8 @@ export function UserDropdown() {
                 variant="secondary" 
                 className="text-xs bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
               >
-                <Crown className="h-3 w-3 mr-1" />
-                Premium
+                <Gift className="h-3 w-3 mr-1" />
+                Free
               </Badge>
               <Badge variant="outline" className="text-xs border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">
                 <Activity className="h-3 w-3 mr-1" />

@@ -1,5 +1,5 @@
 import { AudiobooksPage } from "../audiobooks/AudiobooksPage"
-
+export const dynamic = 'force-dynamic'
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001"
 
 // ———————————————————————————————————————————————————————————

@@ -20,7 +20,7 @@ const Logo = ({ className = "" }) => (
 
 const Navigation = () => (
   <nav className="hidden md:flex items-center space-x-8">
-    {['Features', 'Pricing', 'About'].map((item) => (
+    {['Features', 'Missions', 'Pricing' ].map((item) => (
       <a
         key={item}
         href={`#${item.toLowerCase()}`}

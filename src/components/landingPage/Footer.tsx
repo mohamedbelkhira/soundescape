@@ -34,16 +34,13 @@ const FooterContent = () => {
   const footerSections = [
     {
       title: "Product",
-      links: ["Features", "Pricing", "API", "Integrations"]
+      links: ["Features", "Pricing"]
     },
     {
       title: "Company", 
-      links: ["About", "Blog", "Careers", "Contact"]
+      links: ["Missions", "Contact"]
     },
-    {
-      title: "Support",
-      links: ["Help Center", "Community", "Privacy", "Terms"]
-    }
+    
   ];
 
   return (

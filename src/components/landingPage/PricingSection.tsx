@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-
+import Link from 'next/link';
 const PopularBadge = () => (
   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
     <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
@@ -19,11 +19,13 @@ const PlanHeader = ({ plan }) => (
         <span className="text-lg text-gray-400">/{plan.period}</span>
       </div>
     </div>
+    <Link href="/auth/signup">
     <Button 
       className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg' : 'bg-slate-700 hover:bg-slate-600'} text-white border-0 transition-all duration-300 hover:scale-105`}
     >
       Get Started
     </Button>
+    </Link>
   </CardHeader>
 );
 
@@ -82,14 +84,14 @@ const PricingSection = () => {
     },
     {
       name: "Premium",
-      price: "$9.99",
+      price: "$5.99",
       period: "month",
       features: ["Unlimited audiobooks", "Premium audio quality", "Offline downloads", "Advanced bookmarks", "Priority support"],
       popular: true
     },
     {
       name: "Family",
-      price: "$16.99",
+      price: "$9.99",
       period: "month",
       features: ["Everything in Premium", "Up to 6 family members", "Individual profiles", "Parental controls", "Family sharing"],
       popular: false

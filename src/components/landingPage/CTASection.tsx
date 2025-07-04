@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-
+import Link from 'next/link';
 const CTAContent = () => (
   <div className="max-w-3xl mx-auto space-y-8">
     <h2 className="text-4xl md:text-5xl font-bold text-white">
@@ -13,13 +13,15 @@ const CTAContent = () => (
       Join millions of listeners who&apos;ve already discovered the magic of Soundscape
     </p>
     <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+    <Link href="/auth/signup">
+
       <Button 
         size="lg" 
         className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transition-all duration-300 hover:scale-105"
       >
         Join us for Free 
       </Button>
-     
+      </Link>
     </div>
   </div>
 );

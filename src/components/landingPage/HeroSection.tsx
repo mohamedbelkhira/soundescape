@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-
+import Link from 'next/link';
 const SoundWaveAnimation = ({ scrollY }) => (
   <div className="absolute inset-0 flex items-center justify-center">
     {/* Main Sound Waves */}
@@ -62,6 +62,7 @@ const HeroTitle = () => (
 
 const HeroButtons = () => (
   <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+    <Link href="/auth/signup">
     <Button 
       size="lg" 
       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 border-0 group hover:scale-105"
@@ -71,7 +72,7 @@ const HeroButtons = () => (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
       </svg>
     </Button>
-  
+    </Link>
   </div>
 );
 

@@ -43,7 +43,7 @@ export function SignInForm() {
       } else {
         // Get the updated session to access user role
         const session = await getSession()
-        
+
         if (session?.user) {
           // Role-based redirection
           if (callbackUrl) {
@@ -64,62 +64,66 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto glass-dark border-purple-500/20 shadow-premium bg-slate-800/50">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
-        <CardDescription className="text-center">
-          Enter your credentials to access your account
+        <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          Welcome Back
+        </CardTitle>
+        <CardDescription className="text-center text-gray-400">
+          Sign in to continue your audio journey
         </CardDescription>
       </CardHeader>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+            <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md animate-slide-up backdrop-blur-sm">
               {error}
             </div>
           )}
-          
+
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-300 font-medium">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="your@email.com"
               {...form.register("email")}
               disabled={isLoading}
+              className="bg-slate-900/50 border-slate-700 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200"
             />
             {form.formState.errors.email && (
-              <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
+              <p className="text-sm text-red-400 animate-slide-up">{form.formState.errors.email.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-gray-300 font-medium">Password</Label>
             <Input
               id="password"
               type="password"
               placeholder="Enter your password"
               {...form.register("password")}
               disabled={isLoading}
+              className="bg-slate-900/50 border-slate-700 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200"
             />
             {form.formState.errors.password && (
-              <p className="text-sm text-red-600">{form.formState.errors.password.message}</p>
+              <p className="text-sm text-red-400 animate-slide-up">{form.formState.errors.password.message}</p>
             )}
           </div>
         </CardContent>
-        
+
         <CardFooter className="flex flex-col space-y-4">
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-          
-          <p className="text-sm text-center text-gray-600">
+
+          <p className="text-sm text-center text-gray-400">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="text-blue-600 hover:underline">
+            <Link href="/auth/signup" className="text-purple-400 hover:text-pink-400 font-semibold transition-colors duration-200">
               Sign up
             </Link>
           </p>

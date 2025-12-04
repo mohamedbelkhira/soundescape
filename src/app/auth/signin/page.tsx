@@ -7,7 +7,7 @@ const LoginBackground = () => (
   <div className="absolute inset-0">
     {/* Animated gradient background */}
     <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
-    
+
     {/* Floating orbs */}
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
@@ -38,18 +38,18 @@ const LoginBackground = () => (
 const ImageSection = () => (
   <div className="hidden lg:flex lg:w-1/2 relative">
     <LoginBackground />
-    
+
     {/* Main Image */}
     <div className="absolute inset-0 z-5">
-      <img 
-        src="/image_login.png" 
-        alt="Soundscape Audio Experience" 
+      <img
+        src="/image_login.png"
+        alt="Soundscape Audio Experience"
         className="w-full h-full object-cover opacity-60"
       />
       {/* Gradient overlay to blend with background */}
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-purple-900/60 to-slate-900/80" />
     </div>
-    
+
     {/* Content overlay */}
     <div className="relative z-10 flex flex-col justify-center items-center text-center px-12 w-full">
       <div className="max-w-md space-y-8">
@@ -102,29 +102,29 @@ const ImageSection = () => (
 
 // Right side form section
 const FormSection = () => (
-  <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-6 lg:px-8 xl:px-12 bg-white">
+  <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-6 lg:px-8 xl:px-12 bg-slate-900">
     <div className="max-w-md mx-auto w-full space-y-8">
       {/* Mobile header (hidden on desktop) */}
       <div className="lg:hidden text-center space-y-4">
         <Link href="/" className="inline-block">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             Soundscape
           </h1>
         </Link>
-        <p className="text-gray-600">Welcome back to your audio journey</p>
+        <p className="text-gray-400">Welcome back to your audio journey</p>
       </div>
 
       {/* Desktop header */}
       <div className="hidden lg:block text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-600">Continue your audio journey</p>
+        <h2 className="text-2xl font-bold text-white">Welcome Back</h2>
+        <p className="text-gray-400">Continue your audio journey</p>
       </div>
 
       {/* Sign in form */}
       <div className="space-y-6">
         <Suspense fallback={
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
           </div>
         }>
           <SignInForm />
@@ -133,9 +133,9 @@ const FormSection = () => (
 
       {/* Back to home link */}
       <div className="text-center">
-        <Link 
-          href="/" 
-          className="inline-flex items-center text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200"
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-gray-400 hover:text-purple-400 transition-colors duration-200"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

@@ -2,9 +2,11 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+
 const PopularBadge = () => (
-  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
+  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg animate-glow">
       Most Popular
     </span>
   </div>
@@ -20,11 +22,11 @@ const PlanHeader = ({ plan }) => (
       </div>
     </div>
     <Link href="/auth/signup">
-    <Button 
-      className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg' : 'bg-slate-700 hover:bg-slate-600'} text-white border-0 transition-all duration-300 hover:scale-105`}
-    >
-      Get Started
-    </Button>
+      <Button
+        className={`w-full ${plan.popular ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-purple-500/50 animate-glow' : 'bg-slate-700 hover:bg-slate-600 hover:shadow-lg'} text-white border-0 transition-all duration-300 hover:scale-105`}
+      >
+        Get Started
+      </Button>
     </Link>
   </CardHeader>
 );
@@ -33,23 +35,44 @@ const FeatureList = ({ features }) => (
   <CardHeader className="pt-0">
     <ul className="space-y-3">
       {features.map((feature, i) => (
-        <li key={i} className="flex items-center text-gray-300">
-          <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.li
+          key={i}
+          className="flex items-center text-gray-300"
+          initial={{ opacity: 0, x: -10 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1, duration: 0.3 }}
+        >
+          <svg className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          {feature}
-        </li>
+          <span>{feature}</span>
+        </motion.li>
       ))}
     </ul>
   </CardHeader>
 );
 
 const PricingCard = ({ plan, index }) => (
-  <Card className={`relative ${plan.popular ? 'bg-gradient-to-b from-purple-900/50 to-pink-900/50 border-purple-500/50 scale-105 shadow-2xl shadow-purple-500/20' : 'bg-slate-800/50 border-slate-700/50'} backdrop-blur-sm hover:scale-105 transition-all duration-300`}>
-    {plan.popular && <PopularBadge />}
-    <PlanHeader plan={plan} />
-    <FeatureList features={plan.features} />
-  </Card>
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1, duration: 0.6 }}
+  >
+    <Card className={`relative h-full ${plan.popular ? 'glass-card border-purple-500/50 scale-105 shadow-premium' : 'glass-card border-slate-700/50'} hover:scale-105 transition-all duration-300 overflow-hidden`}>
+      {/* Gradient overlay for popular plan */}
+      {plan.popular && (
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 to-pink-900/30 pointer-events-none" />
+      )}
+
+      {plan.popular && <PopularBadge />}
+      <div className="relative z-10">
+        <PlanHeader plan={plan} />
+        <FeatureList features={plan.features} />
+      </div>
+    </Card>
+  </motion.div>
 );
 
 const PricingGrid = ({ plans }) => (
@@ -61,7 +84,13 @@ const PricingGrid = ({ plans }) => (
 );
 
 const SectionHeader = ({ title, subtitle }) => (
-  <div className="text-center mb-16">
+  <motion.div
+    className="text-center mb-16"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.6 }}
+  >
     <h2 className="text-4xl md:text-5xl font-bold mb-4">
       <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
         {title}
@@ -70,7 +99,7 @@ const SectionHeader = ({ title, subtitle }) => (
     <p className="text-xl text-gray-300 max-w-2xl mx-auto">
       {subtitle}
     </p>
-  </div>
+  </motion.div>
 );
 
 const PricingSection = () => {
@@ -101,8 +130,8 @@ const PricingSection = () => {
   return (
     <section id="pricing" className="relative py-24">
       <div className="container mx-auto px-4">
-        <SectionHeader 
-          title="Choose Your Plan" 
+        <SectionHeader
+          title="Choose Your Plan"
           subtitle="Flexible pricing for every type of listener"
         />
         <PricingGrid plans={plans} />

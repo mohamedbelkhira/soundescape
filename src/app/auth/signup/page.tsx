@@ -1,12 +1,13 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { SignUpForm } from "@/components/auth/SignUpForm"
-import { Suspense } from "react"
-// Background animation component similar to your hero section
-const LoginBackground = () => (
+
+// Background animation component
+const SignupBackground = () => (
   <div className="absolute inset-0">
     {/* Animated gradient background */}
     <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
-    
+
     {/* Floating orbs */}
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
@@ -36,19 +37,19 @@ const LoginBackground = () => (
 // Left side image section
 const ImageSection = () => (
   <div className="hidden lg:flex lg:w-1/2 relative">
-    <LoginBackground />
-    
+    <SignupBackground />
+
     {/* Main Image */}
     <div className="absolute inset-0 z-5">
-      <img 
-        src="/image_login.png" 
-        alt="Soundscape Audio Experience" 
+      <img
+        src="/image_login.png"
+        alt="Soundscape Audio Experience"
         className="w-full h-full object-cover opacity-60"
       />
       {/* Gradient overlay to blend with background */}
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-purple-900/60 to-slate-900/80" />
     </div>
-    
+
     {/* Content overlay */}
     <div className="relative z-10 flex flex-col justify-center items-center text-center px-12 w-full">
       <div className="max-w-md space-y-8">
@@ -60,25 +61,9 @@ const ImageSection = () => (
             </span>
           </h1>
           <p className="text-lg text-gray-200 leading-relaxed drop-shadow-md">
-            Immerse yourself in worlds of knowledge and adventure with our revolutionary audiobook platform.
+            Join thousands of listeners and discover your next favorite audiobook with our revolutionary platform.
           </p>
         </div>
-
-        {/* Features highlight */}
-        {/* <div className="space-y-4">
-          <div className="flex items-center space-x-3 text-gray-200 drop-shadow-sm">
-            <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse" />
-            <span>50,000+ Premium Audiobooks</span>
-          </div>
-          <div className="flex items-center space-x-3 text-gray-200 drop-shadow-sm">
-            <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-            <span>AI-Powered Recommendations</span>
-          </div>
-          <div className="flex items-center space-x-3 text-gray-200 drop-shadow-sm">
-            <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-            <span>Offline Listening Experience</span>
-          </div>
-        </div> */}
 
         {/* Decorative audio visualization */}
         <div className="flex justify-center space-x-1 mt-8">
@@ -101,29 +86,29 @@ const ImageSection = () => (
 
 // Right side form section
 const FormSection = () => (
-  <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-6 lg:px-8 xl:px-12 bg-white">
+  <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-6 lg:px-8 xl:px-12 bg-slate-900">
     <div className="max-w-md mx-auto w-full space-y-8">
       {/* Mobile header (hidden on desktop) */}
       <div className="lg:hidden text-center space-y-4">
         <Link href="/" className="inline-block">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             Soundscape
           </h1>
         </Link>
-        <p className="text-gray-600">Start your audio journey</p>
+        <p className="text-gray-400">Start your audio journey today</p>
       </div>
 
       {/* Desktop header */}
       <div className="hidden lg:block text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900">Welcome</h2>
-        <p className="text-gray-600">Start audio journey</p>
+        <h2 className="text-2xl font-bold text-white">Join Soundscape</h2>
+        <p className="text-gray-400">Create your account and explore thousands of audiobooks</p>
       </div>
 
-      {/* Sign in form */}
+      {/* Sign up form */}
       <div className="space-y-6">
         <Suspense fallback={
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
           </div>
         }>
           <SignUpForm />
@@ -132,9 +117,9 @@ const FormSection = () => (
 
       {/* Back to home link */}
       <div className="text-center">
-        <Link 
-          href="/" 
-          className="inline-flex items-center text-sm text-gray-600 hover:text-purple-600 transition-colors duration-200"
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-gray-400 hover:text-purple-400 transition-colors duration-200"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -154,4 +139,3 @@ export default function SignUpPage() {
     </div>
   )
 }
-

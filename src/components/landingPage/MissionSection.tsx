@@ -9,9 +9,9 @@ const MissionCard = ({ icon, title, description, delay }) => (
     viewport={{ once: true, margin: '-100px' }}
     transition={{ delay, duration: 0.6 }}
   >
-    <Card className="bg-slate-800/60 border-slate-700/50 hover:bg-slate-700/60 transition-all duration-500 group hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 backdrop-blur-sm h-full">
+    <Card className="glass-card hover:bg-slate-700/70 transition-all duration-500 group hover:scale-105 shadow-premium hover-lift border-slate-700/50 h-full">
       <CardHeader className="space-y-4 p-8">
-        <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-all duration-300 shadow-lg">
+        <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
           {icon}
         </div>
         <CardTitle className="text-xl text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">
@@ -95,8 +95,8 @@ const MissionSection = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            We're dedicated to revolutionizing the audiobook industry through innovation, 
-            accessibility, and community. Our commitment extends beyond technology to creating 
+            We're dedicated to revolutionizing the audiobook industry through innovation,
+            accessibility, and community. Our commitment extends beyond technology to creating
             meaningful connections between stories and listeners.
           </p>
         </motion.div>
@@ -104,7 +104,7 @@ const MissionSection = () => {
         {/* Mission Cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {missions.map((mission, index) => (
-            <MissionCard 
+            <MissionCard
               key={index}
               icon={mission.icon}
               title={mission.title}
@@ -120,7 +120,7 @@ const MissionSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-3xl p-8 backdrop-blur-sm border border-purple-500/20"
+          className="glass-card rounded-3xl p-8 border-purple-500/20"
         >
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold text-white mb-2">Our Impact</h3>
@@ -128,7 +128,7 @@ const MissionSection = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <StatCard 
+              <StatCard
                 key={index}
                 value={stat.value}
                 label={stat.label}

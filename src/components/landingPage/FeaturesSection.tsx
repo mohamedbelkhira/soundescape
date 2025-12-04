@@ -1,15 +1,19 @@
 import React from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from 'framer-motion';
+
 const FeatureIcon = ({ icon, gradient }) => (
-  <div className={`w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+  <div className={`w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg group-hover:shadow-2xl`}>
     {icon}
   </div>
 );
 
 const FeatureCard = ({ feature, index }) => (
-  <Card className="bg-slate-800/50 border-slate-700/50 hover:bg-slate-700/50 transition-all duration-500 group hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 backdrop-blur-sm">
-    <CardHeader className="space-y-4">
+  <Card className="relative glass-card hover:bg-slate-700/70 transition-all duration-500 group hover:scale-105 shadow-premium hover-lift border-slate-700/50 overflow-hidden">
+    {/* Gradient Border Effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-pink-500/0 to-purple-500/0 group-hover:from-purple-500/20 group-hover:via-pink-500/20 group-hover:to-purple-500/20 rounded-lg transition-all duration-500" />
+
+    <CardHeader className="space-y-4 relative z-10">
       <FeatureIcon icon={feature.icon} gradient={feature.gradient} />
       <CardTitle className="text-xl text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">
         {feature.title}
@@ -24,21 +28,27 @@ const FeatureCard = ({ feature, index }) => (
 const FeaturesGrid = ({ features }) => (
   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
     {features.map((feature, i) => (
-  <motion.div
-    key={i}
-    initial={{ opacity: 0, y: 40 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-100px' }}
-    transition={{ delay: i * 0.05 }}
-  >
-    <FeatureCard feature={feature} index={i} />
-  </motion.div>
-))}
+      <motion.div
+        key={i}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-100px' }}
+        transition={{ delay: i * 0.05, duration: 0.6 }}
+      >
+        <FeatureCard feature={feature} index={i} />
+      </motion.div>
+    ))}
   </div>
 );
 
 const SectionHeader = ({ title, subtitle }) => (
-  <div className="text-center mb-16">
+  <motion.div
+    className="text-center mb-16"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.6 }}
+  >
     <h2 className="text-4xl md:text-5xl font-bold mb-4">
       <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
         {title}
@@ -47,7 +57,7 @@ const SectionHeader = ({ title, subtitle }) => (
     <p className="text-xl text-gray-300 max-w-2xl mx-auto">
       {subtitle}
     </p>
-  </div>
+  </motion.div>
 );
 
 const FeaturesSection = () => {
@@ -117,8 +127,8 @@ const FeaturesSection = () => {
   return (
     <section id="features" className="relative py-24 bg-slate-800/50">
       <div className="container mx-auto px-4">
-        <SectionHeader 
-          title="Powerful Features" 
+        <SectionHeader
+          title="Powerful Features"
           subtitle="Everything you need for the perfect audiobook experience"
         />
         <FeaturesGrid features={features} />

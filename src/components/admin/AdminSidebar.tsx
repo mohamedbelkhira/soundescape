@@ -8,6 +8,7 @@ import {
   Home,
   Users,
   UsersRound,
+  ChevronRight
 } from "lucide-react"
 import Logo from "../common/logo"
 import {
@@ -25,6 +26,7 @@ import {
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 // Navigation items
 const navigationItems = [
@@ -33,17 +35,11 @@ const navigationItems = [
     url: "/admin",
     icon: Home,
   },
-  // {
-  //   title: "Analytics",
-  //   url: "/admin/analytics",
-  //   icon: BarChart3,
-  // },
   {
     title: "Users",
     url: "/admin/users",
     icon: Users,
   },
-
 ]
 
 const managementItems = [
@@ -64,128 +60,110 @@ const managementItems = [
   },
 ]
 
-// const systemItems = [
-//   {
-//     title: "Permissions",
-//     url: "/admin/permissions",
-//     icon: Shield,
-//   },
-//   {
-//     title: "Settings",
-//     url: "/admin/settings",
-//     icon: Settings,
-//   },
-// ]
-
 export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <Sidebar variant="inset" className="border-r border-gray-200">
-      <SidebarHeader className="p-4 border-b border-gray-200">
+    <Sidebar variant="inset" className="border-r border-gray-200 bg-white">
+      <SidebarHeader className="p-6 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg ">
-            <Logo className="h-8 w-8" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg text-white">
+            <Logo className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900">SoundScape Admin</h2>
-            <p className="text-xs text-gray-500">Management Panel</p>
+            <h2 className="text-base font-bold text-gray-900 tracking-tight">SoundScape</h2>
+            <p className="text-xs text-gray-500 font-medium">Admin Portal</p>
           </div>
         </div>
       </SidebarHeader>
-      
-      <SidebarContent>
+
+      <SidebarContent className="px-4 py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium">
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2 px-2">
             Overview
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className={cn(
-                      "w-full justify-start gap-3 px-3 py-2 text-sm transition-colors",
-                      pathname === item.url
-                        ? "bg-blue-50 text-blue-700 hover:bg-blue-100"
-                        : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-1">
+              {navigationItems.map((item) => {
+                const isActive = pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className={cn(
+                        "w-full justify-start gap-3 px-3 py-2.5 text-sm transition-all duration-200 rounded-xl group relative overflow-hidden",
+                        isActive
+                          ? "text-white shadow-md"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      )}
+                    >
+                      <Link href={item.url} className="relative z-10 flex items-center w-full">
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600"
+                            initial={false}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                        )}
+                        <item.icon className={cn("h-5 w-5 mr-3 relative z-10", isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700")} />
+                        <span className="font-medium relative z-10">{item.title}</span>
+                        {isActive && <ChevronRight className="ml-auto h-4 w-4 text-white/80 relative z-10" />}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium">
+        <SidebarGroup className="mt-6">
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2 px-2">
             Content Management
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {managementItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className={cn(
-                      "w-full justify-start gap-3 px-3 py-2 text-sm transition-colors",
-                      pathname === item.url
-                        ? "bg-blue-50 text-blue-700 hover:bg-blue-100"
-                        : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-1">
+              {managementItems.map((item) => {
+                const isActive = pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className={cn(
+                        "w-full justify-start gap-3 px-3 py-2.5 text-sm transition-all duration-200 rounded-xl group relative overflow-hidden",
+                        isActive
+                          ? "text-white shadow-md"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      )}
+                    >
+                      <Link href={item.url} className="relative z-10 flex items-center w-full">
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600"
+                            initial={false}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                        )}
+                        <item.icon className={cn("h-5 w-5 mr-3 relative z-10", isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700")} />
+                        <span className="font-medium relative z-10">{item.title}</span>
+                        {isActive && <ChevronRight className="ml-auto h-4 w-4 text-white/80 relative z-10" />}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500 font-medium">
-            System
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {systemItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className={cn(
-                      "w-full justify-start gap-3 px-3 py-2 text-sm transition-colors",
-                      pathname === item.url
-                        ? "bg-blue-50 text-blue-700 hover:bg-blue-100"
-                        : "text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-gray-200">
-        <div className="text-xs text-gray-500 text-center">
-          <p>&copy; 2025 SoundScape</p>
+      <SidebarFooter className="p-6 border-t border-gray-100 bg-gray-50/50">
+        <div className="text-xs text-gray-400 text-center">
+          <p className="font-medium text-gray-500">&copy; 2025 SoundScape</p>
           <p>Admin Dashboard v1.0</p>
         </div>
       </SidebarFooter>

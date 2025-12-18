@@ -40,14 +40,14 @@ const ImageSection = () => (
     <SignupBackground />
 
     {/* Main Image */}
-    <div className="absolute inset-0 z-5">
+    <div className="absolute inset-0 z-0">
       <img
         src="/image_login.png"
         alt="Soundscape Audio Experience"
-        className="w-full h-full object-cover opacity-60"
+        className="w-full h-full object-cover opacity-40 blur-sm"
       />
       {/* Gradient overlay to blend with background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-purple-900/60 to-slate-900/80" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-purple-900/80 to-slate-900/90" />
     </div>
 
     {/* Content overlay */}
@@ -55,12 +55,12 @@ const ImageSection = () => (
       <div className="max-w-md space-y-8">
         {/* Logo/Brand */}
         <div className="space-y-4">
-          <h1 className="text-5xl font-black drop-shadow-lg">
+          <h1 className="text-5xl font-black">
             <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
               Soundscape
             </span>
           </h1>
-          <p className="text-lg text-gray-200 leading-relaxed drop-shadow-md">
+          <p className="text-lg text-gray-200 leading-relaxed">
             Join thousands of listeners and discover your next favorite audiobook with our revolutionary platform.
           </p>
         </div>
